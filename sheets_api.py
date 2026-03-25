@@ -33,15 +33,15 @@ def get_all_records(spreadsheet_id):
     return filtered_records
 
 
-def get_pending_posts(records):
-    pending_posts = []
+def filter_posts_by_status(records, status_filter):
+    posts = []
 
     for idx, record in enumerate(records, start=2):
-        status = record.get('STATUS', '').lower()
+        record_status = record.get('STATUS', '').lower()
         platform = record.get('PLATFORM', '')
 
-        if status == STATUS_PENDING and platform:
-            pending_posts.append({
+        if record_status == status_filter and platform:
+            posts.append({
                 'row': idx,
                 'id': record.get('ID'),
                 'name': record.get('NAME'),
@@ -50,7 +50,7 @@ def get_pending_posts(records):
                 'media_link': record.get('LINK MEDIA'),
                 'delete_time': record.get('DATE & TIME TO DELETE')
             })
-    return pending_posts
+    return posts
 
 
 def update_post_status(spreadsheet_id, row, new_status):
