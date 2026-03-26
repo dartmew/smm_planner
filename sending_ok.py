@@ -2,21 +2,38 @@ import requests
 import hashlib
 import random
 import time
+from environs import Env
 
 
-
+def upload_foto_and_get_id(group_id, app_id, access_token, app_secret_key, img_url):
+    upload_url_params = {
+        'application_key': app_id,
+        'method': 'photos.getUploadUrl',
+        'gid': group_id,
+        'format': 'json'
+    }
+    signature_data = ''.join([f'{k}={v}' for k, v in sorted(upload_url_params.items())])
+    signature_data += app_secret_key
+    upload_url_params['sig'] = hashlib.md5(signature_data.encode('utf-8')).hexdigest()
+    upload_url_params['access_token'] = access_token   
+    response = requests.post('https://api.ok.ru/fb.do', data=upload_url_params).json()
+    upload_url = response['upload_url']
+    photo = 
+    upload_response = requests.post(upload_url, files=photo).json()
+    photo_id = upload_response['photo_id']
+    return photo_id
 
 
 def publish_post(post):
-    app_id = '512004455067'
-    app_secret_key = 'F3CB96135A48059A49897505'
-    access_token = '-n-omXmMzNv318yDyjiWNQkQZ8JNCzjtWnv80uSUIzF0u1V1YYFbjECVhKHnvAynMxsW7vL4ebIld7b4Vnfi'
-    group_id = '70000048710396'
-    
-    # Текст сообщения
-    message = 'Hello, World!'
-    
-    # Формирование параметров запроса
+    env = Env()
+    env.read_env()
+    app_id = env.str('OK_APP_ID')
+    app_secret_key = env.str('OK_APP_SECRET_KEY')
+    access_token = env.str('OK_ACCESS_TOKEN')
+    group_id = env.str('OK_GROUP_ID')    
+    message = pending.get('text')
+    img_url = pending.get('media_link')
+    photo_id = upload_foto(group_id, app_id, access_token, app_secret_key, img_url)
     params = {
         'application_key': app_id,
         'method': 'mediatopic.post',
@@ -26,24 +43,16 @@ def publish_post(post):
         'format': 'json',
         'attachment': {
             'media': [ 
-                {"type": "photo", "list": [{ "id": "1234567890"}]},
+                {"type": "photo", "list": [{ "id": photo_id}]},
             ]
         }
-    }
-    
-    # Формирование подписи запроса
+    }    
     signature_data = ''.join([f'{k}={v}' for k, v in sorted(params.items())])
-    signature_data += app_secret_key
-    
-    # Добавление подписи и токена доступа к параметрам запроса
+    signature_data += app_secret_key   
     params['sig'] = hashlib.md5(signature_data.encode('utf-8')).hexdigest()
     params['access_token'] = access_token
-    
-    # Отправка запроса
     response = requests.post('https://api.ok.ru/fb.do', params=params)
-    
-    # Проверка ответа
     if response.status_code == 200:
-        print('Сообщение успешно опубликовано!')
+        return True
     else:
-        print(f'Ошибка публикации: {response.json()}')
+        return False
