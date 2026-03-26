@@ -24,7 +24,7 @@ def upload_foto_and_get_id(group_id, app_id, access_token, app_secret_key, img_u
     return photo_id
 
 
-def publish_post(pending):
+def publish_post_ok(pending):
     env = Env()
     env.read_env()
     app_id = env.str('OK_APP_ID')
