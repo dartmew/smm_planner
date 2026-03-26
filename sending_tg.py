@@ -1,9 +1,6 @@
 import telebot
 import time
 
-from dotenv import load_dotenv
-from environs import env
-
 def sending_img_in_tg(pending):
 	token = env.str('POSTING_TELEGRAM_BOT_API_KEY')
 	chat_id = env.str('TELEGRAM_CHAT_ID')
