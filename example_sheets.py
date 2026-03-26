@@ -12,9 +12,11 @@ def main():
     # Получение постов для публикации
     pending = sheets_api.filter_posts_by_status(records, sheets_api.STATUS_PENDING)
     print(f'pending rows: {pending}')
-    # Обновление статуса в строке таблицы
     row = 3
+    # Обновление статуса в строке таблицы
     sheets_api.update_post_status(spreadsheet_id, row, sheets_api.STATUS_PUBLISHED)
+    # Обновление текста ошибки в строке таблицы
+    sheets_api.update_post_error(spreadsheet_id, row, 'no image has been downloaded')
 
 
 if __name__ == "__main__":

@@ -70,3 +70,13 @@ def parse_platforms(platform_string):
     else:
         platforms = platform_string.split()
     return platforms
+
+
+def update_post_error(spreadsheet_id, row, error_message):
+    client = _connect_to_sheets()
+    sheet = client.open_by_key(spreadsheet_id).sheet1
+    
+    headers = sheet.row_values(1)
+    error_col_index = headers.index('ERROR DESCRIPTION') + 1
+    
+    sheet.update_cell(row, error_col_index, error_message)
