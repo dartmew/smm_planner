@@ -24,7 +24,7 @@ def upload_foto_and_get_id(group_id, app_id, access_token, app_secret_key, img_u
     return photo_id
 
 
-def publish_post(post):
+def publish_post(pending):
     env = Env()
     env.read_env()
     app_id = env.str('OK_APP_ID')
@@ -33,7 +33,7 @@ def publish_post(post):
     group_id = env.str('OK_GROUP_ID')    
     message = pending.get('text')
     img_url = pending.get('media_link')
-    photo_id = upload_foto(group_id, app_id, access_token, app_secret_key, img_url)
+    photo_id = upload_foto_and_get_id(group_id, app_id, access_token, app_secret_key, img_url)
     params = {
         'application_key': app_id,
         'method': 'mediatopic.post',
