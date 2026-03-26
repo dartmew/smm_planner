@@ -7,16 +7,17 @@ def main():
     load_dotenv()
     spreadsheet_id = os.environ['SPREADSHEET_ID']
 
-    # Поулчение записей из таблицы
-    records = sheets_api.get_all_records(spreadsheet_id)
-    # Получение постов для публикации
-    pending = sheets_api.filter_posts_by_status(records, sheets_api.STATUS_PENDING)
-    print(f'pending rows: {pending}')
+    client = sheets_api.get_client()
+    records = sheets_api.get_all_records(client, spreadsheet_id)
+    posts = sheets_api.filter_posts_by_status(records, sheets_api.STATUS_PENDING)
+    print(posts)
     row = 3
-    # Обновление статуса в строке таблицы
-    sheets_api.update_post_status(spreadsheet_id, row, sheets_api.STATUS_PUBLISHED)
-    # Обновление текста ошибки в строке таблицы
-    sheets_api.update_post_error(spreadsheet_id, row, 'no image has been downloaded')
+    sheets_api.update_post_status(
+        client,
+        spreadsheet_id,
+        row,
+        sheets_api.STATUS_PUBLISHED)
+    sheets_api.update_post_error(client, spreadsheet_id, row, "Какая-то ошибка")
 
 
 if __name__ == "__main__":

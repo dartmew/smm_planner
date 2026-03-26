@@ -13,14 +13,13 @@ SCOPES = [
 CREDENTIALS_FILE = 'credentials.json'
 
 
-def _connect_to_sheets():
+def get_client():
     creds = Credentials.from_service_account_file(CREDENTIALS_FILE, scopes=SCOPES)
     client = gspread.authorize(creds)
     return client
 
 
-def get_all_records(spreadsheet_id):
-    client = _connect_to_sheets()
+def get_all_records(client, spreadsheet_id):
     sheet = client.open_by_key(spreadsheet_id).sheet1
     all_records = sheet.get_all_records()
     filtered_records = []
@@ -46,20 +45,17 @@ def filter_posts_by_status(records, status_filter):
                 'id': record.get('ID'),
                 'name': record.get('NAME'),
                 'platform': record.get('PLATFORM'),
-                'doc_link': record.get('LINK GOOGLE DOC'),
+                'text': record.get('TEXT'),
                 'media_link': record.get('LINK MEDIA'),
                 'delete_time': record.get('DATE & TIME TO DELETE')
             })
     return posts
 
 
-def update_post_status(spreadsheet_id, row, new_status):
-    client = _connect_to_sheets()
+def update_post_status(client, spreadsheet_id, row, new_status):
     sheet = client.open_by_key(spreadsheet_id).sheet1
-
     headers = sheet.row_values(1)
     status_col_index = headers.index('STATUS') + 1
-
     sheet.update_cell(row, status_col_index, new_status)
     print(f'Строка {row}: статус обновлен на {new_status}')
 
@@ -72,11 +68,8 @@ def parse_platforms(platform_string):
     return platforms
 
 
-def update_post_error(spreadsheet_id, row, error_message):
-    client = _connect_to_sheets()
+def update_post_error(client, spreadsheet_id, row, error_message):
     sheet = client.open_by_key(spreadsheet_id).sheet1
-    
     headers = sheet.row_values(1)
     error_col_index = headers.index('ERROR DESCRIPTION') + 1
-    
     sheet.update_cell(row, error_col_index, error_message)
