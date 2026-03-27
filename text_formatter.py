@@ -12,12 +12,12 @@ def format_text(text):
     formatted_text = re.sub(r'\s+"(\s|$)', r'"\1', formatted_text)
     formatted_text = re.sub(r'(^|\s)\'\s+', r'\1\'', formatted_text)
     formatted_text = re.sub(r'\s+\'(\s|$)', r'\'\1', formatted_text)
-    formatted_text = format_quotes(formatted_text)
+    formatted_text = _format_quotes(formatted_text)
 
     return formatted_text
 
 
-def format_quotes(text):
+def _format_quotes(text):
     quotes = ['"', "'"]
     result = []
 
