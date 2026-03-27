@@ -18,7 +18,7 @@ def upload_foto_and_get_id(group_id, app_id, access_token, app_secret_key, img_u
     upload_url_params['access_token'] = access_token   
     response = requests.post('https://api.ok.ru/fb.do', data=upload_url_params).json()
     upload_url = response['upload_url']
-    photo = 
+    # photo = 
     upload_response = requests.post(upload_url, files=photo).json()
     photo_id = upload_response['photo_id']
     return photo_id
