@@ -3,21 +3,25 @@ import time
 import json
 from dotenv import load_dotenv
 from environs import env
+from google_drive_id_extractor import extract_google_drive_id
+
 
 load_dotenv()
 TOKEN = env.str('POSTING_TELEGRAM_BOT_API_KEY')
 CHAT_ID = env.str('TELEGRAM_CHAT_ID')
 
 
-def sending_post_in_tg(posts):
-	bot = telebot.TeleBot(token=TOKEN)
-	for post in posts:
-		send = bot.send_photo(chat_id=CHAT_ID, photo='https://avatars.mds.yandex.net/i?id=d3c260a598a0f42a73eb0c9a62df928d_l-4517378-images-thumbs&n=13', caption=post['text'])
-		with open('posts_ids.json', 'r+') as file:
-			ids = json.load(file)
-			ids[post['id']]=send.message_id
-			json.dump(ids, open('posts_ids.json','w+'))
-		time.sleep(2)
+def sending_post_in_tg(post):
+	bot = telebot.TeleBot(token=TOKEN)	
+	send = bot.send_photo(
+		chat_id=CHAT_ID,
+		photo=f'https://drive.google.com/uc?export=download&id={extract_google_drive_id(post['media_link'])}',
+		caption=post['text']
+	)
+	with open('posts_ids.json', 'r+') as file:
+		ids = json.load(file)
+		ids[post['id']]=send.message_id
+		json.dump(ids, open('posts_ids.json','w+'))
 
 
 def delete_post_in_tg(post_id):
@@ -33,5 +37,3 @@ def delete_post_in_tg(post_id):
 			del ids[post_id]
 			json.dump(ids, open('posts_ids.json','w+'))
     
-
-
