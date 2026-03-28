@@ -73,3 +73,4 @@ def update_post_error(client, spreadsheet_id, row, error_message):
     headers = sheet.row_values(1)
     error_col_index = headers.index('ERROR DESCRIPTION') + 1
     sheet.update_cell(row, error_col_index, error_message)
+
