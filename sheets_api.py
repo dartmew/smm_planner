@@ -87,7 +87,7 @@ def update_post_error(client, spreadsheet_id, row, error_message):
 def download_drive_files_to_memory(media_link):
     if not media_link:
         return []
-    
+
     if ',' in media_link:
         links = [link.strip() for link in media_link.split(',')]
     else:
@@ -97,28 +97,28 @@ def download_drive_files_to_memory(media_link):
     for link in links:
         if link:
             buffers.append(_download_single_file(link))
-    
+
     return buffers
 
 
 def _download_single_file(media_link):
     creds = get_credentials()
-    
+
     if '/d/' in media_link:
         file_id = media_link.split('/d/')[1].split('/')[0]
     elif 'id=' in media_link:
         file_id = media_link.split('id=')[1].split('&')[0]
     else:
         raise ValueError(f"Не могу извлечь ID из ссылки: {media_link}")
-    
+
     drive_service = build('drive', 'v3', credentials=creds)
     request = drive_service.files().get_media(fileId=file_id)
     file_buffer = BytesIO()
     downloader = MediaIoBaseDownload(file_buffer, request)
     done = False
-    
+
     while not done:
         status, done = downloader.next_chunk()
     file_buffer.seek(0)
-    
+
     return file_buffer
