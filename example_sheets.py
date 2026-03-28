@@ -19,7 +19,7 @@ def main():
         row,
         sheets_api.STATUS_PUBLISHED)
     sheets_api.update_post_error(client, spreadsheet_id, row, "Какая-то ошибка")
-    delete_post_in_tg('1')
+    
 
 
 if __name__ == "__main__":
