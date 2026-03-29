@@ -44,10 +44,13 @@ def filter_posts_by_status(records, status_filter):
                 'row': idx,
                 'id': record.get('ID'),
                 'name': record.get('NAME'),
+                'publicate_time': record.get('DATE & TIME TO PUBLICATION'),
                 'platform': record.get('PLATFORM'),
                 'text': record.get('TEXT'),
-                'media_link': record.get('LINK MEDIA'),
-                'delete_time': record.get('DATE & TIME TO DELETE')
+                'media_link': record.get('MEDIA LINK'),
+                'delete_time': record.get('DATE & TIME TO DELETE'),
+                'status': record.get('STATUS'),
+                'error_description': record.get('ERROR_DESCRIPTION')
             })
     return posts
 
