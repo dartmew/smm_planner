@@ -10,7 +10,6 @@ TOKEN = env.str('POSTING_TELEGRAM_BOT_API_KEY')
 CHAT_ID = env.str('TELEGRAM_CHAT_ID')
 
 
-
 def sending_post_in_tg(post):
     bot = telebot.TeleBot(token=TOKEN)
     send = bot.send_photo(
@@ -22,7 +21,6 @@ def sending_post_in_tg(post):
         ids = json.load(file)
         ids[post['id']] = send.message_id
         json.dump(ids, open('posts_ids.json', 'w+'))
-
 
 
 def delete_post_in_tg(post_id):
