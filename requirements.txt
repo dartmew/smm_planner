@@ -1,0 +1,6 @@
+google_api_python_client==2.193.0
+gspread==6.2.1
+protobuf==7.34.1
+environs==14.5.0
+telebot==0.0.5
+requests==2.32.5
