@@ -1,4 +1,3 @@
-import os
 import sheets_api
 import time
 
@@ -8,34 +7,35 @@ from environs import env
 from sending_tg import delete_post_in_tg
 from telebot.apihelper import ApiTelegramException
 from requests.exceptions import ReadTimeout
-from datetime import timedelta
 from dateutil.parser import parse
 
- 
+
 def main():
     load_dotenv()
     spreadsheet_id = env.str('SPREADSHEET_ID')
     client = sheets_api.get_client()
     records = sheets_api.get_all_records(client, spreadsheet_id)
-    pending_posts = sheets_api.filter_posts_by_status(records, sheets_api.STATUS_PENDING)
+    deleting_posts = sheets_api.filter_posts_by_status(
+        records,
+        sheets_api.STATUS_PUBLISHED)
     now = datetime.now()
     posts = []
-    for post in pending_posts:
-        if post.get('delete_time'):
+    for post in deleting_posts:
+        if post.get('DATE & TIME TO DELETE'):
             posts.append(post)
-            posts = sorted(posts, key=lambda x: x['delete_time'], reverse=True)
+            posts = sorted(posts, key=lambda x: x['DATE & TIME TO DELETE'], reverse=True)
     for post in posts:
         errors = []
         publication_statuses = []
-        row = post.get('row')
-        deletion_time = parse(post['publicate_time'])
+        row = post.get('ID')
+        deletion_time = parse(post['DATE & TIME TO PUBLICATION'])
         if deletion_time > now:
             delay = now - deletion_time
             total_sec = delay.total_seconds()
             time.sleep(int(total_sec))
-        if 'TG' in post.get('platform'):		
+        if 'TG' in post.get('PLATFORM'):
             try:
-                delete_post_in_tg(post['id'])
+                delete_post_in_tg(post['ID'])
             except ReadTimeout:
                 error_description = "ТГ: ошибка подключения"
                 errors.append(error_description)
@@ -52,7 +52,7 @@ def main():
             else:
                 publication_statuses.append(True)
 
-        if errors:           
+        if errors:
             sheets_api.update_post_error(client, spreadsheet_id, row, ', '.join(errors))
         if publication_statuses:
             if True in publication_statuses:
@@ -71,6 +71,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-

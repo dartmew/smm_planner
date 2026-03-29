@@ -1,6 +1,7 @@
-import os
 import sheets_api
 import time
+import publish_post_ok
+import send_to_vk
 
 from dotenv import load_dotenv
 from environs import env
@@ -8,17 +9,18 @@ from datetime import datetime
 from sending_tg import sending_post_in_tg
 from telebot.apihelper import ApiTelegramException
 from requests.exceptions import ReadTimeout
-from datetime import timedelta
 from dateutil.parser import parse
 
- 
+
 def main():
     load_dotenv()
     now = datetime.now()
     spreadsheet_id = env.str('SPREADSHEET_ID')
     client = sheets_api.get_client()
     records = sheets_api.get_all_records(client, spreadsheet_id)
-    pending_posts = sheets_api.filter_posts_by_status(records, sheets_api.STATUS_PENDING)
+    pending_posts = sheets_api.filter_posts_by_status(
+        records,
+        sheets_api.STATUS_PENDING)
     posts = []
     for post in pending_posts:
         if post.get('publicate_time'):
@@ -32,8 +34,8 @@ def main():
         if publication_time > now:
             delay = now - publication_time
             total_sec = delay.total_seconds()
-            time.sleep(int(total_sec))       
-        if 'TG' in post.get('platform'):						
+            time.sleep(int(total_sec))
+        if 'TG' in post.get('platform'):
             try:
                 sending_post_in_tg(post)
             except ReadTimeout:
@@ -78,10 +80,7 @@ def main():
                     spreadsheet_id,
                     row,
                     sheets_api.STATUS_ERROR)
-    
+
 
 if __name__ == "__main__":
     main()
-
-
-
