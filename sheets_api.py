@@ -122,4 +122,3 @@ def _download_single_file(media_link):
     file_buffer.seek(0)
 
     return file_buffer
-
