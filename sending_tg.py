@@ -14,8 +14,8 @@
 #     bot = telebot.TeleBot(token=TOKEN)
 #     send = bot.send_photo(
 #         chat_id=CHAT_ID,
-#         photo=f'https://drive.google.com/uc?export
-#=download&id={extract_google_drive_id(post['media_link'])}',
+#         photo=f'https://drive.google.com/uc?export=download&id={extra
+#ct_google_drive_id(post['media_link'])}',
 #         caption=post['text'])
 #     with open('posts_ids.json', 'r+') as file:
 #         ids = json.load(file)
