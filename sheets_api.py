@@ -1,5 +1,8 @@
 import gspread
 from google.oauth2.service_account import Credentials
+from googleapiclient.http import MediaIoBaseDownload
+from googleapiclient.discovery import build
+from io import BytesIO
 
 
 STATUS_PENDING = 'pending'
@@ -13,10 +16,13 @@ SCOPES = [
 CREDENTIALS_FILE = 'credentials.json'
 
 
+def get_credentials():
+    return Credentials.from_service_account_file(CREDENTIALS_FILE, scopes=SCOPES)
+
+
 def get_client():
-    creds = Credentials.from_service_account_file(CREDENTIALS_FILE, scopes=SCOPES)
-    client = gspread.authorize(creds)
-    return client
+    creds = get_credentials()
+    return gspread.authorize(creds)
 
 
 def get_all_records(client, spreadsheet_id):
@@ -44,10 +50,13 @@ def filter_posts_by_status(records, status_filter):
                 'row': idx,
                 'id': record.get('ID'),
                 'name': record.get('NAME'),
+                'publicate_time': record.get('DATE & TIME TO PUBLICATION'),
                 'platform': record.get('PLATFORM'),
                 'text': record.get('TEXT'),
-                'media_link': record.get('LINK MEDIA'),
-                'delete_time': record.get('DATE & TIME TO DELETE')
+                'media_link': record.get('MEDIA LINK'),
+                'delete_time': record.get('DATE & TIME TO DELETE'),
+                'status': record.get('STATUS'),
+                'error_description': record.get('ERROR_DESCRIPTION')
             })
     return posts
 
@@ -73,4 +82,44 @@ def update_post_error(client, spreadsheet_id, row, error_message):
     headers = sheet.row_values(1)
     error_col_index = headers.index('ERROR DESCRIPTION') + 1
     sheet.update_cell(row, error_col_index, error_message)
+
+
+def download_drive_files_to_memory(media_link):
+    if not media_link:
+        return []
+
+    if ',' in media_link:
+        links = [link.strip() for link in media_link.split(',')]
+    else:
+        links = media_link.split()
+    buffers = []
+
+    for link in links:
+        if link:
+            buffers.append(_download_single_file(link))
+
+    return buffers
+
+
+def _download_single_file(media_link):
+    creds = get_credentials()
+
+    if '/d/' in media_link:
+        file_id = media_link.split('/d/')[1].split('/')[0]
+    elif 'id=' in media_link:
+        file_id = media_link.split('id=')[1].split('&')[0]
+    else:
+        raise ValueError(f"Не могу извлечь ID из ссылки: {media_link}")
+
+    drive_service = build('drive', 'v3', credentials=creds)
+    request = drive_service.files().get_media(fileId=file_id)
+    file_buffer = BytesIO()
+    downloader = MediaIoBaseDownload(file_buffer, request)
+    done = False
+
+    while not done:
+        status, done = downloader.next_chunk()
+    file_buffer.seek(0)
+
+    return file_buffer
 
