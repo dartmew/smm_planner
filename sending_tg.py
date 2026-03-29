@@ -23,7 +23,6 @@ def sending_post_in_tg(post):
 		json.dump(ids, open('posts_ids.json','w+'))
 	
 
-
 def delete_post_in_tg(post_id):
 	bot = telebot.TeleBot(token=TOKEN)
 	with open('posts_ids.json', 'r+') as file:
