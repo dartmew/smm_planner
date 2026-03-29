@@ -27,9 +27,9 @@ def main():
     for post in posts:
         delay = parse(post['delete_time']) - now
         total_sec = delay.total_seconds()
+        time.sleep(total_sec)
         if total_sec>=0:
-			if 'TG' in post.get('platform'):
-				time.sleep(total_sec)		
+			if 'TG' in post.get('platform'):		
                 try:
                     delete_post_in_tg(post['id'])
                 except ReadTimeout:

@@ -26,10 +26,10 @@ def main():
             posts = sorted(posts, key=lambda x: x['publicate_time'], reverse=True)
     for post in posts:
     	delay = parse(post['publicate_time']) - now
-        total_sec = delay.total_seconds()
+		total_sec = delay.total_seconds()
+		time.sleep(total_sec)
 		if total_sec>=0:
-			if 'TG' in post.get('platform'):
-				time.sleep(total_sec)		
+			if 'TG' in post.get('platform'):						
                 try:
                     sending_post_in_tg(post)
                 except ReadTimeout:
@@ -48,7 +48,6 @@ def main():
                 else:
                     publication_statuses.append(True)
             if 'OK' in post.get('platform'):
-        	    time.sleep(total_sec)
                 try:
                     publish_post_ok(post)
                 except KeyError:
