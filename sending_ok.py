@@ -10,7 +10,7 @@
 #         'gid': group_id,
 #         'format': 'json'
 #     }
-#     signature_data = ''.join([f'{k}={v}' for k, v in sorted(upload_url_params.items())])
+#signature_data = ''.join([f'{k}={v}' for k, v in sorted(upload_url_params.items())])
 #     signature_data += app_secret_key
 #     upload_url_params['sig'] = hashlib.md5(signature_data.encode('utf-8')).hexdigest()
 #     upload_url_params['access_token'] = access_token
