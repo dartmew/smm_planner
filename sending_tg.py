@@ -36,4 +36,3 @@ def delete_post_in_tg(post_id):
 		if result:
 			del ids[post_id]
 			json.dump(ids, open('posts_ids.json','w+'))
-    
