@@ -23,7 +23,10 @@ def main():
     for post in deleting_posts:
         if post.get('DATE & TIME TO DELETE'):
             posts.append(post)
-            posts = sorted(posts, key=lambda x: x['DATE & TIME TO DELETE'], reverse=True)
+            posts = sorted(
+                posts,
+                key=lambda x: x['DATE & TIME TO DELETE'],
+                reverse=True)
     for post in posts:
         errors = []
         publication_statuses = []
