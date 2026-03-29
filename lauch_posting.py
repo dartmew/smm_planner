@@ -52,7 +52,7 @@ def main():
             else:
                 publication_statuses.append(True)
         if 'VK' in post.get('platform'):
-            send_to_vk()
+            # send_to_vk()
             publication_statuses.append(True)
         if errors:
             sheets_api.update_post_error(client, spreadsheet_id, row, ', '.join(errors))
