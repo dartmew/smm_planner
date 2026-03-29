@@ -1,5 +1,4 @@
 import os
-import pprint
 from dotenv import load_dotenv
 import sheets_api
 from sending_ok import publish_post_ok
@@ -11,19 +10,20 @@ from requests.exceptions import ReadTimeout
 def main():
     load_dotenv()
     spreadsheet_id = os.environ['SPREADSHEET_ID']
-
     client = sheets_api.get_client()
     records = sheets_api.get_all_records(client, spreadsheet_id)
-    posts = sheets_api.filter_posts_by_status(records, sheets_api.STATUS_PENDING)
-    # posts = sorted(posts, key=lambda x: x['age'])
-    pprint.pprint(posts)
-    
-
+    pending_posts = sheets_api.filter_posts_by_status(
+        records,
+        sheets_api.STATUS_PENDING,
+    )
+    posts = []
+    for post in pending_posts:
+        if not post.get('publicate_time'):
+            posts.append(post)
     for post in posts:
         errors = []
         publication_statuses = []
         row = post.get('row')
-
         if 'OK' in post.get('platform'):
             try:
                 publish_post_ok(post)
@@ -33,7 +33,6 @@ def main():
                 publication_statuses.append(False)
             else:
                 publication_statuses.append(True)
-
         if 'TG' in post.get('platform'):
             try:
                 sending_post_in_tg(post)
@@ -52,18 +51,10 @@ def main():
                     publication_statuses.append(False)
             else:
                 publication_statuses.append(True)
-
-
-        # if 'VK' in post.get('platform'):
-        #     try:
-        #         publish_post_vk(post)
-        #     except KeyError:
-        #         error_description = 'ОК: не удалось подключиться к серверу'
-        #         errors.append(error_description)
-        #     else:
-
-
-        if errors:           
+        if 'VK' in post.get('platform'):
+            send_to_vk()
+            publication_statuses.append(True)
+        if errors:
             sheets_api.update_post_error(client, spreadsheet_id, row, ', '.join(errors))
         if publication_statuses:
             if True in publication_statuses:
