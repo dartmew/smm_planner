@@ -5,6 +5,7 @@ from sending_ok import publish_post_ok
 from sending_tg import sending_post_in_tg
 from telebot.apihelper import ApiTelegramException
 from requests.exceptions import ReadTimeout
+from vk import send_to_vk
 
 
 def main():
@@ -52,7 +53,7 @@ def main():
             else:
                 publication_statuses.append(True)
         if 'VK' in post.get('platform'):
-            # send_to_vk()
+            send_to_vk(post)
             publication_statuses.append(True)
         if errors:
             sheets_api.update_post_error(client, spreadsheet_id, row, ', '.join(errors))
