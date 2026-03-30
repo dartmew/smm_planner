@@ -1,10 +1,11 @@
 import telebot
 import json
 from dotenv import load_dotenv
-from environs import env
+from environs import Env
 from google_drive_id_extractor import extract_google_drive_id
+from text_formatter import format_text
 
-
+env = Env()
 load_dotenv()
 TOKEN = env.str('POSTING_TELEGRAM_BOT_API_KEY')
 CHAT_ID = env.str('TELEGRAM_CHAT_ID')
@@ -16,7 +17,7 @@ def sending_post_in_tg(post):
         chat_id=CHAT_ID,
         photo=f'''https://drive.google.com/uc?export
         =download&id={extract_google_drive_id(post['media_link'])}''',
-        caption=post['text'])
+        caption=format_text(post['text']))
     with open('posts_ids.json', 'r+') as file:
         ids = json.load(file)
         ids[post['id']] = send.message_id

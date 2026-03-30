@@ -4,7 +4,7 @@ from sending_ok import publish_post_ok
 from vk import send_to_vk
 
 from dotenv import load_dotenv
-from environs import env
+from environs import Env
 from datetime import datetime
 from sending_tg import sending_post_in_tg
 from telebot.apihelper import ApiTelegramException
@@ -14,6 +14,7 @@ from vk_api.exceptions import ApiError
 
 
 def main():
+    env = Env()
     load_dotenv()
     now = datetime.now()
     spreadsheet_id = env.str('SPREADSHEET_ID')
