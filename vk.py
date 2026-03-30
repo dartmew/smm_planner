@@ -30,7 +30,10 @@ def send_to_vk(post):
     for number, media_file in enumerate(media_files, 1):
         # загрузка изображения на сервер ВК
         upload_url = upload_server.json()['response']['upload_url']
-        uploaded_image = requests.post(upload_url, files={'photo': (f'{number}.png', media_file)})
+        uploaded_image = requests.post(
+            upload_url,
+            files={'photo': (f'{number}.png', media_file)}
+        )
         uploaded_image.raise_for_status()
 
         # сохранение изображения в альбоме группы

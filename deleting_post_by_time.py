@@ -66,7 +66,8 @@ def main():
             except ApiError as e:
                 error_description = f"VK: {e}"
                 if e.code == 5:
-                    error_description += "\nОшибка доступа - неверный токен или недостаточно прав."
+                    error_description += "\nОшибка доступа"
+                    " - неверный токен или недостаточно прав."
                 elif e.code == 15:
                     error_description += "\nОшибка приложения - недостаточно прав."
                 errors.append(error_description)
