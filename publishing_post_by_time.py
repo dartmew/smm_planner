@@ -33,7 +33,7 @@ def main():
         row = post.get('row')
         publication_time = parse(post['publicate_time'])
         if publication_time > now:
-            delay = now - publication_time
+            delay = publication_time - now
             total_sec = delay.total_seconds()
             time.sleep(int(total_sec))
         if 'TG' in post.get('platform'):

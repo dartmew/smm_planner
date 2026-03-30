@@ -24,6 +24,7 @@ def sending_post_in_tg(post):
 
 
 def delete_post_in_tg(post_id):
+    post_id = str(post_id)
     bot = telebot.TeleBot(token=TOKEN)
     with open('posts_ids.json', 'r+') as file:
         ids = json.load(file)
@@ -33,4 +34,5 @@ def delete_post_in_tg(post_id):
             message_ids=[id_for_delete])
         if result:
             del ids[post_id]
-            json.dump(ids, open('posts_ids.json', 'w+'))
+            with open('posts_ids.json', 'w+') as file:
+                json.dump(ids, file)
