@@ -38,4 +38,6 @@ pip install -r requirements.txt
 - `OK_ACCESS_TOKEN` - Токен пользователя в одноклассниках.
 - `OK_GROUP_ID` - ID сообщества в одноклассниках.
 - `POSTING_TELEGRAM_BOT_API_KEY` - Ключ телеграмм бота.
-- `TELEGRAM_CHAT_ID` - Телеграмм сообщества.
+- `TELEGRAM_CHAT_ID` - ID Телеграмм сообщества.
+- `VK_ACCESS_TOKEN` - Токен пользователя в VK.
+- `VK_GROUP_ID` - ID группы VK.
