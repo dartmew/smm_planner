@@ -31,19 +31,15 @@ def main():
                 reverse=True)
     for post in posts:
         row = post.get('row')
-        deletion_time = parse(post['publicate_time'])
+        deletion_time = parse(post['delete_time'])
         if deletion_time > now:
-            delay = now - deletion_time
+            delay = deletion_time - now
             total_sec = delay.total_seconds()
             time.sleep(int(total_sec))
         if 'TG' in post.get('platform'):
             errors = []
             try:
                 delete_post_in_tg(post['id'])
-            except KeyError:
-                error_description = "ID опубликованного поста не найден"
-                errors.append(error_description)
-                print('ID опубликованного поста не найден')
             except ReadTimeout:
                 error_description = "ТГ: ошибка подключения"
                 errors.append(error_description)
