@@ -1,6 +1,7 @@
 import sheets_api
 import time
 
+from vk import delete_post
 from dotenv import load_dotenv
 from datetime import datetime
 from environs import env
@@ -29,7 +30,7 @@ def main():
                 reverse=True)
     for post in posts:
         errors = []
-        publication_statuses = []
+        deletion_statuses = []
         row = post.get('ID')
         deletion_time = parse(post['DATE & TIME TO PUBLICATION'])
         if deletion_time > now:
@@ -42,23 +43,29 @@ def main():
             except ReadTimeout:
                 error_description = "ТГ: ошибка подключения"
                 errors.append(error_description)
-                publication_statuses.append(False)
+                deletion_statuses.append(False)
             except ApiTelegramException as error:
                 if error.error_code == 401:
                     error_description = "ТГ: ошибка авторизации бота"
                     errors.append(error_description)
-                    publication_statuses.append(False)
+                    deletion_statuses.append(False)
                 if error.error_code == 400:
                     error_description = "ТГ: чат с таким ID не найден"
                     errors.append(error_description)
-                    publication_statuses.append(False)
+                    deletion_statuses.append(False)
             else:
-                publication_statuses.append(True)
-
+                deletion_statuses.append(True)
+        if 'VK' in post.get('PLATFORM'):
+            delete_post(post['ID'])
+            deletion_statuses.append(True)
         if errors:
-            sheets_api.update_post_error(client, spreadsheet_id, row, ', '.join(errors))
-        if publication_statuses:
-            if True in publication_statuses:
+            sheets_api.update_post_error(
+                client,
+                spreadsheet_id,
+                row,
+                ', '.join(errors))
+        if deletion_statuses:
+            if True in deletion_statuses:
                 sheets_api.update_post_status(
                     client,
                     spreadsheet_id,
@@ -70,6 +77,12 @@ def main():
                     spreadsheet_id,
                     row,
                     sheets_api.STATUS_DELETED)
+        if errors:
+            sheets_api.update_post_error(
+                client,
+                spreadsheet_id,
+                row,
+                ', '.join(errors))
 
 
 if __name__ == "__main__":
