@@ -5,6 +5,7 @@ from decouple import config
 import requests
 
 from sheets_api import download_drive_files_to_memory
+from text_formatter import format_text
 
 VK_API_VERSION = '5.199'
 VK_ACCESS_TOKEN = config('VK_ACCESS_TOKEN')
@@ -59,7 +60,7 @@ def send_to_vk(post):
         'from_group': 1,
         'attachments': (",".join(attachments)),
         'primary_attachments_mode': 'grid',
-        'message': post['text'],
+        'message': format_text(post['text']),
         'v': VK_API_VERSION
     }
     published_post = requests.post(f'{VK_URL}/wall.post', params=params)

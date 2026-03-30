@@ -4,7 +4,7 @@ import time
 from vk import delete_post
 from dotenv import load_dotenv
 from datetime import datetime
-from environs import env
+from environs import Env
 from sending_tg import delete_post_in_tg
 from telebot.apihelper import ApiTelegramException
 from requests.exceptions import ReadTimeout
@@ -13,6 +13,7 @@ from vk_api.exceptions import ApiError
 
 
 def main():
+    env = Env()
     load_dotenv()
     spreadsheet_id = env.str('SPREADSHEET_ID')
     client = sheets_api.get_client()
