@@ -22,26 +22,27 @@ def main():
     now = datetime.now()
     posts = []
     for post in deleting_posts:
-        if post.get('DATE & TIME TO DELETE'):
+        if post.get('delete_time'):
             posts.append(post)
             posts = sorted(
                 posts,
-                key=lambda x: x['DATE & TIME TO DELETE'],
+                key=lambda x: x['delete_time'],
                 reverse=True)
     for post in posts:
-        row = post.get('ID')
-        deletion_time = parse(post['DATE & TIME TO PUBLICATION'])
+        row = post.get('row')
+        deletion_time = parse(post['publicate_time'])
         if deletion_time > now:
             delay = now - deletion_time
             total_sec = delay.total_seconds()
             time.sleep(int(total_sec))
-        if 'TG' in post.get('PLATFORM'):
+        if 'TG' in post.get('platform'):
             errors = []
             try:
-                delete_post_in_tg(post['ID'])
+                delete_post_in_tg(post['id'])
             except KeyError:
                 error_description = "ID опубликованного поста не найден"
                 errors.append(error_description)
+                print('ID опубликованного поста не найден')
             except ReadTimeout:
                 error_description = "ТГ: ошибка подключения"
                 errors.append(error_description)
@@ -59,9 +60,9 @@ def main():
                     row,
                     sheets_api.STATUS_DELETED)
 
-        if 'VK' in post.get('PLATFORM'):
+        if 'VK' in post.get('platform'):
             errors = []
-            delete_post(post['ID'])
+            delete_post(post['id'])
         if errors:
             sheets_api.update_post_error(
                 client,
