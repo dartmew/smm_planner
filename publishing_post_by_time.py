@@ -76,6 +76,8 @@ def main():
                     error_description += "\nОшибка доступа - неверный токен или недостаточно прав."
                 elif e.code == 15:
                     error_description += "\nОшибка приложения - недостаточно прав."
+                errors.append(error_description)
+                publication_statuses.append(False)
             else:
                 publication_statuses.append(True)
         if errors:
