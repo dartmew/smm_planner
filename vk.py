@@ -100,4 +100,5 @@ def delete_post(post_id: str):
         result.raise_for_status()
         if result:
             del ids['vk'][post_id]
-            json.dump(ids, open('posts_ids.json', 'w+'))
+            with open('posts_ids.json', 'w+') as file:
+                json.dump(ids, file)
