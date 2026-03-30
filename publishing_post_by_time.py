@@ -10,6 +10,7 @@ from sending_tg import sending_post_in_tg
 from telebot.apihelper import ApiTelegramException
 from requests.exceptions import ReadTimeout
 from dateutil.parser import parse
+from vk_api.exceptions import ApiError
 
 
 def main():
@@ -63,8 +64,23 @@ def main():
             else:
                 publication_statuses.append(True)
         if 'VK' in post.get('platform'):
-            send_to_vk()
-            publication_statuses.append(True)
+            try:
+                send_to_vk(post)
+            except ReadTimeout:
+                error_description = "VK: ошибка подключения"
+                errors.append(error_description)
+                publication_statuses.append(False)
+            except ApiError as e:
+                error_description = f"VK: {e}"
+                if e.code == 5:
+                    error_description += "\nОшибка доступа"
+                    " - неверный токен или недостаточно прав."
+                elif e.code == 15:
+                    error_description += "\nОшибка приложения - недостаточно прав."
+                errors.append(error_description)
+                publication_statuses.append(False)
+            else:
+                publication_statuses.append(True)
         if errors:
             sheets_api.update_post_error(client, spreadsheet_id, row, ', '.join(errors))
         if publication_statuses:
