@@ -9,6 +9,7 @@ from sending_tg import delete_post_in_tg
 from telebot.apihelper import ApiTelegramException
 from requests.exceptions import ReadTimeout
 from dateutil.parser import parse
+from vk_api.exceptions import ApiError
 
 
 def main():
@@ -59,10 +60,21 @@ def main():
                     spreadsheet_id,
                     row,
                     sheets_api.STATUS_DELETED)
-
         if 'VK' in post.get('platform'):
             errors = []
-            delete_post(post['id'])
+            try:
+                delete_post(post['ID'])
+            except ReadTimeout:
+                error_description = "VK: ошибка подключения"
+                errors.append(error_description)
+            except ApiError as e:
+                error_description = f"VK: {e}"
+                if e.code == 5:
+                    error_description += "\nОшибка доступа"
+                    " - неверный токен или недостаточно прав."
+                elif e.code == 15:
+                    error_description += "\nОшибка приложения - недостаточно прав."
+                errors.append(error_description)
         if errors:
             sheets_api.update_post_error(
                 client,
