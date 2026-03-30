@@ -23,46 +23,46 @@ def main():
     now = datetime.now()
     posts = []
     for post in deleting_posts:
-        if post.get('DATE & TIME TO DELETE'):
+        if post.get('delete_time'):
             posts.append(post)
             posts = sorted(
                 posts,
-                key=lambda x: x['DATE & TIME TO DELETE'],
+                key=lambda x: x['delete_time'],
                 reverse=True)
     for post in posts:
-        errors = []
-        deletion_statuses = []
-        row = post.get('ID')
-        deletion_time = parse(post['DATE & TIME TO PUBLICATION'])
+        row = post.get('row')
+        deletion_time = parse(post['delete_time'])
         if deletion_time > now:
-            delay = now - deletion_time
+            delay = deletion_time - now
             total_sec = delay.total_seconds()
             time.sleep(int(total_sec))
-        if 'TG' in post.get('PLATFORM'):
+        if 'TG' in post.get('platform'):
+            errors = []
             try:
-                delete_post_in_tg(post['ID'])
+                delete_post_in_tg(post['id'])
             except ReadTimeout:
                 error_description = "ТГ: ошибка подключения"
                 errors.append(error_description)
-                deletion_statuses.append(False)
             except ApiTelegramException as error:
                 if error.error_code == 401:
                     error_description = "ТГ: ошибка авторизации бота"
                     errors.append(error_description)
-                    deletion_statuses.append(False)
                 if error.error_code == 400:
                     error_description = "ТГ: чат с таким ID не найден"
                     errors.append(error_description)
-                    deletion_statuses.append(False)
             else:
-                deletion_statuses.append(True)
-        if 'VK' in post.get('PLATFORM'):
+                sheets_api.update_post_status(
+                    client,
+                    spreadsheet_id,
+                    row,
+                    sheets_api.STATUS_DELETED)
+        if 'VK' in post.get('platform'):
+            errors = []
             try:
-                delete_post(post['ID'])
+                delete_post(post['id'])
             except ReadTimeout:
                 error_description = "VK: ошибка подключения"
                 errors.append(error_description)
-                deletion_statuses.append(False)
             except ApiError as e:
                 error_description = f"VK: {e}"
                 if e.code == 5:
@@ -71,34 +71,18 @@ def main():
                 elif e.code == 15:
                     error_description += "\nОшибка приложения - недостаточно прав."
                 errors.append(error_description)
-                deletion_statuses.append(False)
-            else:
-                deletion_statuses.append(True)
         if errors:
             sheets_api.update_post_error(
                 client,
                 spreadsheet_id,
                 row,
                 ', '.join(errors))
-        if deletion_statuses:
-            if True in deletion_statuses:
-                sheets_api.update_post_status(
-                    client,
-                    spreadsheet_id,
-                    row,
-                    sheets_api.STATUS_DELETED)
-            else:
-                sheets_api.update_post_status(
-                    client,
-                    spreadsheet_id,
-                    row,
-                    sheets_api.STATUS_DELETED)
-        if errors:
-            sheets_api.update_post_error(
+        else:
+            sheets_api.update_post_status(
                 client,
                 spreadsheet_id,
                 row,
-                ', '.join(errors))
+                sheets_api.STATUS_DELETED)
 
 
 if __name__ == "__main__":
