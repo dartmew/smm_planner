@@ -1,7 +1,7 @@
 import sheets_api
 import time
-import publish_post_ok
-import send_to_vk
+from sending_ok import publish_post_ok
+from vk import send_to_vk
 
 from dotenv import load_dotenv
 from environs import env
