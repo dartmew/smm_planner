@@ -63,7 +63,7 @@ def main():
         if 'VK' in post.get('platform'):
             errors = []
             try:
-                delete_post(post['ID'])
+                delete_post(post['id'])
             except ReadTimeout:
                 error_description = "VK: ошибка подключения"
                 errors.append(error_description)
