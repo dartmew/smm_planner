@@ -1,6 +1,6 @@
 import requests
 import hashlib
-from vk import download_image
+from sheets_api import download_drive_files_to_memory
 from environs import Env
 
 
@@ -17,9 +17,10 @@ def upload_foto_and_get_id(group_id, app_id, access_token, app_secret_key, img_u
     upload_url_params['access_token'] = access_token
     response = requests.post('https://api.ok.ru/fb.do', data=upload_url_params).json()
     upload_url = response['upload_url']
-    photo = download_image(img_url)
-    upload_response = requests.post(upload_url, files=photo).json()
-    photo_id = upload_response['photo_id']
+    photos = download_drive_files_to_memory(img_url)
+    for photo in photos:
+        upload_response = requests.post(upload_url, files=photo).json()
+        photo_id = upload_response['photo_id']
     return photo_id
 
 
